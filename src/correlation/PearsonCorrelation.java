@@ -3,10 +3,17 @@ package correlation;
 import java.util.HashMap;
 
 public class PearsonCorrelation {
-	public static double compare(double[] sample1, double[] sample2){
+	public static CorrelationResult compare(double[] sample1, double[] sample2, double significanceThreshold){
+		double correlationCoefficient = getCorrelationCoefficient(sample1, sample2);
+		double pValue = getPValue(correlationCoefficient);
+
+		return new CorrelationResult(correlationCoefficient, pValue, isSignificant(pValue, significanceThreshold));
+	}
+	
+	private static double getCorrelationCoefficient(double[] sample1, double[] sample2){
 		int samplesSize = sample1.length;
 		HashMap<String,Double> values = getValues(sample1, sample2);
-		
+
 		return ((samplesSize * values.get("sample1TimesSample2Sum")) - (values.get("sample1Sum") * values.get("sample2Sum"))) / 
 			   Math.sqrt(((samplesSize * values.get("squaredSample1Sum") - Math.pow(values.get("sample1Sum"), 2)) * (samplesSize * values.get("squaredSample2Sum") - Math.pow(values.get("sample2Sum"), 2))));
 	}
@@ -34,5 +41,18 @@ public class PearsonCorrelation {
 		values.put("squaredSample2Sum", squaredSample2Sum);
 		
 		return values;
+	}
+	
+	private static double getPValue(double correlationCoefficient){
+		return 0;
+	}
+	
+	private static boolean isSignificant(double pValue, double significanceThreshold){
+		if(pValue < significanceThreshold){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }

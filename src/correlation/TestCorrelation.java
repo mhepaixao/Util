@@ -9,14 +9,14 @@ import java.util.HashMap;
 
 public class TestCorrelation {
 	public static void main(String[] args){
-		HashMap<String,double[]> samples = readSamples("cohesion_coupling.txt");
-//		HashMap<String,double[]> samples = readSamples("numberOfClusters_modularizationQuality.txt");
+//		HashMap<String,double[]> samples = readSamples("cohesion_coupling.txt");
+		HashMap<String,double[]> samples = readSamples("numberOfClusters_modularizationQuality.txt");
 		double[] sample1 = samples.get("sample1");
 		double[] sample2 = samples.get("sample2");
 		
-//		double correlationCoefficient = PearsonCorrelation.compare(sample1, sample2);
-		double correlationCoefficient = SpearmanCorrelation.compare(sample1, sample2);
-//		System.out.println(correlationCoefficient);
+		CorrelationResult correlationResult = PearsonCorrelation.compare(sample1, sample2, 0.05);
+//		double correlationCoefficient = SpearmanCorrelation.compare(sample1, sample2);
+		System.out.println(correlationResult.getCorrelationCoefficient());
 	}
 	
 	private static HashMap<String,double[]> readSamples(String fileName){
