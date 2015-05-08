@@ -2,10 +2,13 @@ package correlation;
 
 import java.util.HashMap;
 
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.util.FastMath;
+
 public class PearsonCorrelation {
 	public static CorrelationResult compare(double[] sample1, double[] sample2, double significanceThreshold){
 		double correlationCoefficient = getCorrelationCoefficient(sample1, sample2);
-		double pValue = getPValue(correlationCoefficient);
+		double pValue = getPValue(correlationCoefficient, sample1.length);
 
 		return new CorrelationResult(correlationCoefficient, pValue, isSignificant(pValue, significanceThreshold));
 	}
@@ -15,7 +18,7 @@ public class PearsonCorrelation {
 		HashMap<String,Double> values = getValues(sample1, sample2);
 
 		return ((samplesSize * values.get("sample1TimesSample2Sum")) - (values.get("sample1Sum") * values.get("sample2Sum"))) / 
-			   Math.sqrt(((samplesSize * values.get("squaredSample1Sum") - Math.pow(values.get("sample1Sum"), 2)) * (samplesSize * values.get("squaredSample2Sum") - Math.pow(values.get("sample2Sum"), 2))));
+			   FastMath.sqrt(((samplesSize * values.get("squaredSample1Sum") - FastMath.pow(values.get("sample1Sum"), 2)) * (samplesSize * values.get("squaredSample2Sum") - FastMath.pow(values.get("sample2Sum"), 2))));
 	}
 	
 	private static HashMap<String,Double> getValues(double[] sample1, double[] sample2){
@@ -30,8 +33,8 @@ public class PearsonCorrelation {
 			sample1Sum += sample1[i];
 			sample2Sum += sample2[i];
 			sample1TimesSample2Sum += sample1[i] * sample2[i];
-			squaredSample1Sum += Math.pow(sample1[i], 2);
-			squaredSample2Sum += Math.pow(sample2[i], 2);
+			squaredSample1Sum += FastMath.pow(sample1[i], 2);
+			squaredSample2Sum += FastMath.pow(sample2[i], 2);
 		}
 		
 		values.put("sample1Sum", sample1Sum);
@@ -43,8 +46,12 @@ public class PearsonCorrelation {
 		return values;
 	}
 	
-	private static double getPValue(double correlationCoefficient){
-		return 0;
+	private static double getPValue(double correlationCoefficient, int sampleSize){
+		int degreeOfFreedom = sampleSize - 2;
+        TDistribution tDistribution = new TDistribution(degreeOfFreedom);
+        double tValue = FastMath.abs(correlationCoefficient * FastMath.sqrt((sampleSize - 2)/(1 - FastMath.pow(correlationCoefficient, 2))));
+
+        return 2 * tDistribution.cumulativeProbability(-tValue);	
 	}
 	
 	private static boolean isSignificant(double pValue, double significanceThreshold){

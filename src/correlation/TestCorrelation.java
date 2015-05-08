@@ -17,6 +17,8 @@ public class TestCorrelation {
 		CorrelationResult correlationResult = PearsonCorrelation.compare(sample1, sample2, 0.05);
 //		double correlationCoefficient = SpearmanCorrelation.compare(sample1, sample2);
 		System.out.println(correlationResult.getCorrelationCoefficient());
+		System.out.println(correlationResult.getPValue());
+		System.out.println(correlationResult.isSignificant());
 	}
 	
 	private static HashMap<String,double[]> readSamples(String fileName){
